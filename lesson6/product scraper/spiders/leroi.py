@@ -8,10 +8,11 @@ from scrapy.loader import ItemLoader
 class LeroiSpider(scrapy.Spider):
 
     def __init__(self, keyword):
+        self.keyword = keyword
         self.allowed_domains = ['leroymerlin.ru']
         # self.name = f'leroi-{keyword}'
         self.name = f'leroi'
-        self.start_urls = [f'https://leroymerlin.ru/search/?q={keyword}']
+        self.start_urls = [f'https://leroymerlin.ru/search/?q={self.keyword}']
 
     def parse(self, response: HtmlResponse):
         next_page = response.xpath('//div[@class="next-paginator-button-wrapper"]/a/@href').extract_first()
@@ -28,6 +29,7 @@ class LeroiSpider(scrapy.Spider):
         loader.add_xpath('title', '//h1[@slot="title"]/text()')
         loader.add_xpath('price', '//uc-pdp-price-view[@slot="primary-price"]/span/text()')
         loader.add_xpath('description', '//uc-pdp-section-vlimited/div/p/text()')
+        loader.add_xpath('features', '//dl[@class="def-list"]/div/*/text()')
         loader.add_xpath('images', '//img[@alt="product image"]/@src')
         loader.add_value('url', response.url)
         yield loader.load_item()

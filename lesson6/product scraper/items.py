@@ -9,17 +9,22 @@ import scrapy
 from scrapy.loader.processors import Compose, MapCompose, TakeFirst
 
 
-def process_price(values):
+def process_price(price_raw):
 
     return {
-        'amount': int(values[0].replace(' ', '')),
-        'currency': 'RUR' if values[1] == '₽' else values[1],
-        'units': values[2],
+        'amount': int(price_raw[0].replace(' ', '')),
+        'currency': 'RUR' if price_raw[1] == '₽' else price_raw[1],
+        'units': price_raw[2],
     }
 
 
-def process_images(values):
-    return values
+def process_features(features_raw):
+
+    keys = [item.strip() for item in features_raw if not features_raw.index(item) % 2]
+    values = [item.strip() for item in features_raw if features_raw.index(item) % 2]
+    values = [float(v) if v.replace('.', '').isdigit() else v for v in values]
+
+    return {key: value for key, value in zip(keys, values)}
 
 
 class ProductItem(scrapy.Item):
@@ -30,4 +35,6 @@ class ProductItem(scrapy.Item):
     title = scrapy.Field(output_processor=TakeFirst())
     price = scrapy.Field(output_processor=Compose(process_price))
     description = scrapy.Field(output_processor=TakeFirst())
+
+    features = scrapy.Field(output_processor=Compose(process_features))
     images = scrapy.Field(input_processor=Compose())
