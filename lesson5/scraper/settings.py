@@ -68,7 +68,7 @@ CONCURRENT_REQUESTS_PER_IP = 16
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'pipelines.ScraperPipeline': 300,
+   'pipelines.DataBasePipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
